@@ -19,8 +19,8 @@ defmodule ExConcepts.Lens do
   end
 
   def view(obj, {get, _}), do: get.(obj)
-  def set(obj, val, {_, set}), do: set.(obj, val)
-  def over(obj, setter, {get, _} = lens), do: set(obj, setter.(get.(obj)), lens)
+  def set(obj, val, lens), do: over(obj, fn _ -> val end, lens)
+  def over(obj, setter, {get, set}), do: set.(obj, setter.(get.(obj)))
 
   def fview({get, _}, obj), do: get.(obj)
   def fset(lens, obj, val), do: set(obj, val, lens)
@@ -37,7 +37,7 @@ defmodule ExConcepts.Lens do
   def fcontramap(lens, f), do: contramap(f, lens)
   def contramap(f, {get, set}) do
     {
-      get,
+      fn obj -> get.(f.(obj)) end,
       fn obj, val -> set.(f.(obj), val) end
     }
   end
