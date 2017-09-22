@@ -18,8 +18,18 @@ defmodule ExConcepts.Lens do
     }
   end
 
+  def empty() do
+    {
+      fn obj -> obj end,
+      fn _, val -> val end
+    }
+  end
+
   def view(obj, {get, _}), do: get.(obj)
+  def view({get, _}, obj), do: get.(obj)
+  def set({_, _} = lens, obj, val), do: set(obj, val, lens)
   def set(obj, val, lens), do: over(obj, fn _ -> val end, lens)
+  def over({_, _} = lens, obj, setter), do: over(obj, setter, lens)
   def over(obj, setter, {get, set}), do: set.(obj, setter.(get.(obj)))
 
   def fview({get, _}, obj), do: get.(obj)
@@ -50,6 +60,7 @@ defmodule ExConcepts.Lens do
   end
 
   def fmap(lens, f), do: map(f, lens)
+  def map({_, _} = lens, f), do: map(f, lens)
   def map(f, {get, set}) do
     {
       fn obj -> f.(get.(obj)) end,
