@@ -15,4 +15,18 @@ defmodule ExConcepts do
   def hello do
     :world
   end
+
+  def recurseA 8 do
+    raise "Boom"
+  end
+
+  def recurseA i do
+    recurseB i + 1
+  end
+
+  def recurseB i do
+    recurseA i
+  rescue
+    e -> IO.inspect System.stacktrace
+  end
 end
